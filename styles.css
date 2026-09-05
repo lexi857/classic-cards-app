@@ -1,0 +1,218 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body {
+  background-color: #1b5e20; /* Casino Table Green */
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Screen Management */
+.screen {
+  display: none;
+  height: 100vh;
+  width: 100vw;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.screen.active {
+  display: flex;
+}
+
+/* Home Screen Layout */
+#home-screen {
+  justify-content: space-around;
+  align-items: center;
+  text-align: center;
+}
+
+.app-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.app-logo {
+  font-size: 2rem;
+  margin-top: 10px;
+  word-spacing: 12px;
+}
+
+.button-group, .button-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  max-width: 320px;
+}
+
+/* Buttons */
+.btn-gold {
+  background: linear-gradient(180deg, #ffd700 0%, #caa000 100%);
+  color: #1a1a1a;
+  border: none;
+  padding: 14px 20px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  text-transform: uppercase;
+}
+
+.btn-gold:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.btn-game {
+  flex: 1;
+  background: linear-gradient(180deg, #ffd700 0%, #caa000 100%);
+  color: #1a1a1a;
+  border: none;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 6px;
+  text-align: left;
+  padding-left: 15px;
+}
+
+.icon-btn, .icon-btn-sm {
+  background: transparent;
+  border: 2px solid #ffd700;
+  color: #ffd700;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  font-size: 1.4rem;
+}
+
+.icon-btn-sm {
+  width: 44px;
+  height: 44px;
+  font-size: 1.2rem;
+}
+
+/* Main Menu List */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.app-title-sm {
+  font-size: 1.5rem;
+}
+
+.game-list {
+  flex: 1;
+  overflow-y: auto;
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-right: 5px;
+}
+
+.game-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Modals */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.modal.active {
+  display: flex;
+}
+
+.modal-content {
+  background-color: #144718;
+  border: 2px solid #ffd700;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 360px;
+  padding: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  padding-bottom: 10px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+}
+
+.gold-select {
+  background: #1a1a1a;
+  color: #ffd700;
+  border: 1px solid #ffd700;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.full-width {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.tour-text {
+  line-height: 1.5;
+  font-size: 1rem;
+}
+
+#table-play-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
