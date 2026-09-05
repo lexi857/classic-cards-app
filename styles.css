@@ -4,20 +4,22 @@
   padding: 0;
   user-select: none;
   -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent; /* Fixes highlight box on press */
 }
 
-body {
+html, body {
   background-color: #1b5e20; /* Casino Table Green */
   color: #ffffff;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  height: 100vh;
+  height: 100dvh; /* Dynamic Viewport Height fixes iOS Safari scaling */
+  width: 100vw;
   overflow: hidden;
 }
 
 /* Screen Shell */
 .screen {
   display: none;
-  height: 100vh;
+  height: 100dvh;
   width: 100vw;
   padding: 20px;
 }
@@ -31,7 +33,7 @@ body {
 #home-screen {
   justify-content: space-between;
   align-items: center;
-  padding: 60px 20px 40px 20px;
+  padding: 50px 20px 70px 20px; /* Elevated bottom button space */
 }
 
 .home-top {
@@ -85,6 +87,7 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   text-align: center;
+  outline: none;
 }
 
 .btn-gold:active {
@@ -97,32 +100,37 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 15px;
+  padding: 0 10px 15px 10px; /* Perfectly aligns header text with row titles */
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .app-title-sm {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   color: #ffffff;
   font-weight: 700;
+  margin: 0;
 }
 
 .header-gear-btn {
   background: transparent;
   border: none;
   color: #ffffff;
-  font-size: 1.8rem;
+  font-size: 1.4rem;
+  padding: 0 8px;
   cursor: pointer;
+  outline: none;
 }
 
+/* Vertical Scrolling Game List */
 .game-list {
   flex: 1;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   margin-top: 15px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding-right: 4px;
+  padding-bottom: 20px;
 }
 
 /* Unified Single Rectangle Bar per Game */
@@ -133,6 +141,7 @@ body {
   box-shadow: 0 4px 6px rgba(0,0,0,0.25);
   overflow: hidden;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .game-title-btn {
@@ -140,11 +149,12 @@ body {
   background: transparent;
   border: none;
   color: #ffffff;
-  padding: 14px 0 14px 40px;
+  padding: 14px 0 14px 30px;
   font-size: 1.1rem;
   font-weight: 700;
   text-align: center;
   cursor: pointer;
+  outline: none;
 }
 
 .game-gear-btn {
@@ -157,6 +167,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  outline: none;
 }
 
 .game-bar-row:active {
@@ -170,8 +181,8 @@ body {
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.7);
+  height: 100dvh; /* Fixes modal vertical centering on mobile browsers */
+  background: rgba(0, 0, 0, 0.65);
   justify-content: center;
   align-items: center;
   z-index: 100;
@@ -183,7 +194,7 @@ body {
 
 .modal-content {
   background-color: #144718;
-  border: none; /* Removed gold border */
+  border: none;
   border-radius: 12px;
   width: 88%;
   max-width: 340px;
@@ -212,9 +223,10 @@ body {
   color: #ffffff;
   font-size: 1.8rem;
   cursor: pointer;
+  outline: none;
 }
 
-/* Custom iOS-Style Toggle Switches */
+/* Custom Gold Toggle Switches */
 .setting-item {
   display: flex;
   justify-content: space-between;
@@ -242,7 +254,7 @@ body {
   cursor: pointer;
   top: 0; left: 0; right: 0; bottom: 0;
   background-color: #3a3a3c;
-  transition: .3s;
+  transition: .25s;
   border-radius: 28px;
 }
 
@@ -254,19 +266,19 @@ body {
   left: 3px;
   bottom: 3px;
   background-color: white;
-  transition: .3s;
+  transition: .25s;
   border-radius: 50%;
 }
 
 input:checked + .slider {
-  background-color: #34c759;
+  background-color: #d4af37; /* Changed toggle color to Gold */
 }
 
 input:checked + .slider:before {
   transform: translateX(22px);
 }
 
-/* Custom Option Chips for Game Settings */
+/* Game Settings Options Chips */
 .setting-group {
   display: flex;
   flex-direction: column;
@@ -284,20 +296,21 @@ input:checked + .slider:before {
   gap: 8px;
 }
 
+/* Matching identical backgrounds for selected/unselected options */
 .chip {
   flex: 1;
   background: #1e3a20;
-  border: 1px solid transparent;
+  border: 2px solid transparent;
   color: #ffffff;
   padding: 10px;
   border-radius: 6px;
   font-size: 0.95rem;
   cursor: pointer;
+  outline: none;
 }
 
 .chip.active {
-  border: 2px solid #ffd700;
-  background: #0f2711;
+  border: 2px solid #ffd700; /* Gold border indicates active state */
   font-weight: bold;
 }
 
