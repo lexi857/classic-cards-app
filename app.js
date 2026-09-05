@@ -45,3 +45,12 @@ function launchGame(gameName) {
   document.getElementById('in-game-title').textContent = gameName;
   navigateTo('game-screen');
 }
+
+function selectChip(element) {
+  // Find all chips in the same option group and unselect them
+  const parent = element.parentElement;
+  parent.querySelectorAll('.chip').forEach(chip => chip.classList.remove('active'));
+  
+  // Select the tapped chip
+  element.classList.add('active');
+}
