@@ -349,3 +349,123 @@ input:checked + .slider:before {
   align-items: center;
   justify-content: center;
 }
+
+/* ==========================================================================
+   PHASE 2: CARD RENDERING & TABLETOP ENGINE
+   ========================================================================== */
+
+/* Playing Card Base Structure */
+.card {
+  width: 70px;
+  height: 100px;
+  background-color: #ffffff;
+  border-radius: 6px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.35);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5px;
+  font-family: Arial, sans-serif;
+  user-select: none;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.45);
+}
+
+/* Suit Colors */
+.card.red {
+  color: #d32f2f;
+}
+
+.card.black {
+  color: #111111;
+}
+
+/* Card Corner Labels */
+.card-corner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+
+.card-corner.top-left {
+  align-self: flex-start;
+}
+
+.card-corner.bottom-right {
+  align-self: flex-end;
+  transform: rotate(180deg);
+}
+
+.card-rank {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.card-suit-sm {
+  font-size: 0.85rem;
+}
+
+/* Card Center Pip / Graphic */
+.card-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.8rem;
+}
+
+/* Face Down Card Back */
+.card.back {
+  background: repeating-linear-gradient(
+    45deg,
+    #1b4f72,
+    #1b4f72 8px,
+    #154360 8px,
+    #154360 16px
+  );
+  border: 2px solid #ffffff;
+}
+
+.card.back * {
+  display: none;
+}
+
+/* Tabletop Layout Elements */
+.game-table {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.table-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+
+.hand-container {
+  display: flex;
+  justify-content: center;
+  gap: -20px; /* Overlapping card hand effect */
+  padding: 10px;
+}
+
+.hand-container .card {
+  margin-left: -25px;
+}
+
+.hand-container .card:first-child {
+  margin-left: 0;
+}
