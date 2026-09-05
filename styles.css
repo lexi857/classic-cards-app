@@ -523,3 +523,26 @@ input:checked + .slider:before {
     margin-left: -34px;
   }
 }
+
+/* Card Physicality & Sliding Motion */
+.card {
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), left 0.4s ease, top 0.4s ease, opacity 0.25s ease;
+  will-change: transform, left, top;
+}
+
+.hand-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 120px;
+  position: relative;
+}
+
+.hand-container .card {
+  margin-left: -30px;
+}
+
+.hand-container .card:first-child {
+  margin-left: 0;
+}
