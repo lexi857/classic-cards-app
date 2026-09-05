@@ -100,7 +100,7 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 10px 15px 10px;
+  padding: 0 0 15px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -109,9 +109,8 @@ html, body {
   color: #ffffff;
   font-weight: 700;
   margin: 0;
-  flex: 1;
-  text-align: center; /* Horizontally centers Classic Cards header text with game titles */
-  padding-left: 28px; /* Offsets gear button width to ensure pure center alignment */
+  text-align: left;
+  padding-left: 0;
 }
 
 .header-gear-btn {
@@ -207,6 +206,7 @@ html, body {
 }
 
 .modal-header {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -218,6 +218,17 @@ html, body {
 .modal-header h3 {
   font-size: 1.3rem;
   color: #ffffff;
+}
+
+/* Centered header style for in-game settings */
+.modal-header.centered-header h3 {
+  width: 100%;
+  text-align: center;
+}
+
+.modal-header.centered-header .close-btn {
+  position: absolute;
+  right: 0;
 }
 
 .close-btn {
@@ -299,23 +310,22 @@ input:checked + .slider:before {
   gap: 8px;
 }
 
-/* Blends background seamlessly with modal container */
 .chip {
   flex: 1;
-  background: #144718; /* Exact background color of modal box */
+  background: #144718;
   border: 2px solid transparent;
   color: #ffffff;
   padding: 10px;
   border-radius: 6px;
   font-size: 0.95rem;
-  font-weight: 400; /* Regular weight across all options */
+  font-weight: 400;
   cursor: pointer;
   outline: none;
 }
 
 .chip.active {
-  border: 2px solid #d4af37; /* Matching exact classic gold border color */
-  font-weight: 400; /* Keeps font weight identical to unselected options */
+  border: 2px solid #d4af37;
+  font-weight: 400;
 }
 
 .full-width {
