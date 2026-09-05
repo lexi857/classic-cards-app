@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CRAZY EIGHTS GAME ENGINE
+   CRAZY EIGHTS ENGINE WITH PHYSICAL CARD MOTION & STRICT RULES
    ========================================================================== */
 
 const SUITS = [
@@ -30,18 +30,19 @@ class Card {
     this.suit = suit;
     this.rank = rank;
     this.isFaceUp = isFaceUp;
+    this.id = Math.random().toString(36).substr(2, 9);
   }
 
-  renderHTML(onClickHandler = null) {
+  renderHTML(onClickHandler = null, extraClasses = '') {
     const cardDiv = document.createElement('div');
     
     if (!this.isFaceUp) {
-      cardDiv.className = 'card back';
+      cardDiv.className = `card back ${extraClasses}`.trim();
       if (onClickHandler) cardDiv.onclick = onClickHandler;
       return cardDiv;
     }
 
-    cardDiv.className = `card ${this.suit.color}`;
+    cardDiv.className = `card ${this.suit.color} ${extraClasses}`.trim();
     cardDiv.innerHTML = `
       <div class="card-corner top-left">
         <span class="card-rank">${this.rank.rank}</span>
@@ -85,16 +86,22 @@ class Deck {
   }
 }
 
-/* Crazy Eights State Management */
+/* State Engine Variables */
 let deck, playerHand, aiHand, discardPile;
 let currentSuit = null;
 let currentRank = null;
 let isPlayerTurn = true;
 let pendingEightCardIndex = null;
+let isAnimating = false;
 
 function launchGame(gameTitle) {
   document.getElementById('active-game-title').textContent = gameTitle;
   navigateTo('game-screen');
+  startCrazyEights();
+}
+
+function restartCrazyEights() {
+  closeModal('game-over-modal');
   startCrazyEights();
 }
 
@@ -105,8 +112,8 @@ function startCrazyEights() {
   playerHand = [];
   aiHand = [];
   discardPile = [];
+  isAnimating = false;
 
-  // Deal 5 cards each
   for (let i = 0; i < 5; i++) {
     playerHand.push(deck.draw());
     const aiCard = deck.draw();
@@ -114,7 +121,6 @@ function startCrazyEights() {
     aiHand.push(aiCard);
   }
 
-  // Draw initial discard card (retry if it's an 8)
   let initialCard = deck.draw();
   while (initialCard.rank.rank === '8') {
     deck.cards.unshift(initialCard);
@@ -128,6 +134,14 @@ function startCrazyEights() {
   isPlayerTurn = true;
 
   renderBoard();
+}
+
+function hasValidPlay(hand) {
+  return hand.some(card => 
+    card.rank.rank === '8' || 
+    card.suit.name === currentSuit || 
+    card.rank.rank === currentRank
+  );
 }
 
 function renderBoard() {
@@ -149,7 +163,7 @@ function renderBoard() {
     </div>
   `;
 
-  // Render AI Hand (Face Down)
+  // Render AI Hand
   const aiArea = document.getElementById('ai-hand-area');
   aiHand.forEach(card => aiArea.appendChild(card.renderHTML()));
 
@@ -159,13 +173,13 @@ function renderBoard() {
     const stockCard = new Card(SUITS[0], RANKS[0], false);
     stockContainer.appendChild(stockCard.renderHTML(() => handleDrawCard()));
   } else {
-    stockContainer.innerHTML = `<div class="card back" style="opacity: 0.3;"></div>`;
+    stockContainer.innerHTML = `<div class="card back" style="opacity: 0.25; cursor: default;"></div>`;
   }
 
   // Render Discard Pile
   const discardContainer = document.getElementById('discard-container');
   const topCard = discardPile[discardPile.length - 1];
-  discardContainer.appendChild(topCard.renderHTML());
+  discardContainer.appendChild(topCard.renderHTML(null, 'playing'));
 
   // Render Player Hand
   const playerArea = document.getElementById('player-hand-area');
@@ -180,7 +194,7 @@ function getSuitSymbol(suitName) {
 }
 
 function handlePlayerCardClick(index) {
-  if (!isPlayerTurn) return;
+  if (!isPlayerTurn || isAnimating) return;
 
   const card = playerHand[index];
   const isEight = card.rank.rank === '8';
@@ -195,8 +209,6 @@ function handlePlayerCardClick(index) {
 
   if (matchesSuit || matchesRank) {
     playPlayerCard(index, card.suit.name);
-  } else {
-    alert("Invalid card! Play a matching rank, suit, or an 8.");
   }
 }
 
@@ -209,36 +221,56 @@ function selectEightSuit(suitName) {
 }
 
 function playPlayerCard(index, chosenSuit) {
+  isAnimating = true;
   const card = playerHand.splice(index, 1)[0];
   discardPile.push(card);
   currentSuit = chosenSuit;
   currentRank = card.rank.rank;
 
+  renderBoard();
+
   if (checkWinner()) return;
 
   isPlayerTurn = false;
-  renderBoard();
-  setTimeout(runAITurn, 1200);
+  setTimeout(() => {
+    isAnimating = false;
+    runAITurn();
+  }, 600);
 }
 
 function handleDrawCard() {
-  if (!isPlayerTurn) return;
+  if (!isPlayerTurn || isAnimating) return;
+
+  // Rule: Player cannot draw if they already have a valid move
+  if (hasValidPlay(playerHand)) {
+    return;
+  }
 
   if (deck.cards.length > 0) {
-    playerHand.push(deck.draw());
+    isAnimating = true;
+    const drawnCard = deck.draw();
+    playerHand.push(drawnCard);
     renderBoard();
+
+    setTimeout(() => {
+      isAnimating = false;
+      // If drawn card isn't playable, turn automatically passes
+      if (!hasValidPlay([drawnCard])) {
+        isPlayerTurn = false;
+        setTimeout(runAITurn, 600);
+      }
+    }, 400);
   } else {
-    alert("No more cards in stock deck! Turn skipped.");
+    // Stock empty: turn passes
     isPlayerTurn = false;
-    setTimeout(runAITurn, 1000);
+    setTimeout(runAITurn, 600);
   }
 }
 
-/* AI Turn Logic */
+/* AI Turn Automation */
 function runAITurn() {
-  if (isPlayerTurn) return;
+  if (isPlayerTurn || isAnimating) return;
 
-  // Find playable cards
   let playableIndices = [];
   aiHand.forEach((card, index) => {
     if (card.rank.rank === '8' || card.suit.name === currentSuit || card.rank.rank === currentRank) {
@@ -247,45 +279,82 @@ function runAITurn() {
   });
 
   if (playableIndices.length > 0) {
+    isAnimating = true;
     const chosenIndex = playableIndices[0];
     const card = aiHand.splice(chosenIndex, 1)[0];
     card.isFaceUp = true;
     discardPile.push(card);
 
     if (card.rank.rank === '8') {
-      // Pick AI's most frequent suit
       currentSuit = aiHand.length > 0 ? aiHand[0].suit.name : 'Spades';
     } else {
       currentSuit = card.suit.name;
     }
     currentRank = card.rank.rank;
+
+    renderBoard();
+
+    if (checkWinner()) return;
+
+    setTimeout(() => {
+      isAnimating = false;
+      isPlayerTurn = true;
+      renderBoard();
+    }, 600);
   } else if (deck.cards.length > 0) {
+    isAnimating = true;
     const drawnCard = deck.draw();
     drawnCard.isFaceUp = false;
     aiHand.push(drawnCard);
+    renderBoard();
+
+    setTimeout(() => {
+      isAnimating = false;
+      // If AI drew a playable card, attempt to play it
+      drawnCard.isFaceUp = true;
+      if (drawnCard.rank.rank === '8' || drawnCard.suit.name === currentSuit || drawnCard.rank.rank === currentRank) {
+        setTimeout(runAITurn, 400);
+      } else {
+        drawnCard.isFaceUp = false;
+        isPlayerTurn = true;
+        renderBoard();
+      }
+    }, 500);
+  } else {
+    // Pass if stock deck empty
+    isPlayerTurn = true;
+    renderBoard();
   }
-
-  if (checkWinner()) return;
-
-  isPlayerTurn = true;
-  renderBoard();
 }
 
 function checkWinner() {
   if (playerHand.length === 0) {
-    renderBoard();
-    setTimeout(() => alert("🎉 You Win Crazy Eights!"), 100);
+    showGameOverModal(true);
     return true;
   }
   if (aiHand.length === 0) {
-    renderBoard();
-    setTimeout(() => alert("🤖 AI Wins Crazy Eights!"), 100);
+    showGameOverModal(false);
     return true;
   }
   return false;
 }
 
-/* Navigation Helpers */
+function showGameOverModal(playerWon) {
+  const title = document.getElementById('game-over-title');
+  const message = document.getElementById('game-over-message');
+
+  if (playerWon) {
+    title.textContent = "Victory!";
+    message.textContent = "🎉 Congratulations! You cleared your hand and won Crazy Eights!";
+  } else {
+    title.textContent = "Defeat";
+    message.textContent = "🤖 The AI player cleared their hand first. Better luck next time!";
+  }
+
+  openModal('game-over-modal');
+}
+
+/* Modal and Navigation Wrappers */
 function navigateTo(screenId) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
