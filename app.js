@@ -1,5 +1,5 @@
 /* ==========================================================================
-   PHASE 2: CARD ENGINE ARCHITECTURE
+   CRAZY EIGHTS GAME ENGINE
    ========================================================================== */
 
 const SUITS = [
@@ -10,7 +10,7 @@ const SUITS = [
 ];
 
 const RANKS = [
-  { rank: 'A', value: 11 },
+  { rank: 'A', value: 1 },
   { rank: '2', value: 2 },
   { rank: '3', value: 3 },
   { rank: '4', value: 4 },
@@ -25,7 +25,6 @@ const RANKS = [
   { rank: 'K', value: 10 }
 ];
 
-// Card Representation Class
 class Card {
   constructor(suit, rank, isFaceUp = true) {
     this.suit = suit;
@@ -33,15 +32,12 @@ class Card {
     this.isFaceUp = isFaceUp;
   }
 
-  flip() {
-    this.isFaceUp = !this.isFaceUp;
-  }
-
-  renderHTML() {
+  renderHTML(onClickHandler = null) {
     const cardDiv = document.createElement('div');
     
     if (!this.isFaceUp) {
       cardDiv.className = 'card back';
+      if (onClickHandler) cardDiv.onclick = onClickHandler;
       return cardDiv;
     }
 
@@ -57,11 +53,11 @@ class Card {
         <span class="card-suit-sm">${this.suit.symbol}</span>
       </div>
     `;
+    if (onClickHandler) cardDiv.onclick = onClickHandler;
     return cardDiv;
   }
 }
 
-// Standard Deck Engine
 class Deck {
   constructor() {
     this.cards = [];
@@ -89,36 +85,210 @@ class Deck {
   }
 }
 
-// Player Hand Class
-class Hand {
-  constructor() {
-    this.cards = [];
+/* Crazy Eights State Management */
+let deck, playerHand, aiHand, discardPile;
+let currentSuit = null;
+let currentRank = null;
+let isPlayerTurn = true;
+let pendingEightCardIndex = null;
+
+function launchGame(gameTitle) {
+  document.getElementById('active-game-title').textContent = gameTitle;
+  navigateTo('game-screen');
+  startCrazyEights();
+}
+
+function startCrazyEights() {
+  deck = new Deck();
+  deck.shuffle();
+
+  playerHand = [];
+  aiHand = [];
+  discardPile = [];
+
+  // Deal 5 cards each
+  for (let i = 0; i < 5; i++) {
+    playerHand.push(deck.draw());
+    const aiCard = deck.draw();
+    aiCard.isFaceUp = false;
+    aiHand.push(aiCard);
   }
 
-  addCard(card) {
-    this.cards.push(card);
+  // Draw initial discard card (retry if it's an 8)
+  let initialCard = deck.draw();
+  while (initialCard.rank.rank === '8') {
+    deck.cards.unshift(initialCard);
+    deck.shuffle();
+    initialCard = deck.draw();
   }
 
-  clear() {
-    this.cards = [];
+  discardPile.push(initialCard);
+  currentSuit = initialCard.suit.name;
+  currentRank = initialCard.rank.rank;
+  isPlayerTurn = true;
+
+  renderBoard();
+}
+
+function renderBoard() {
+  const playArea = document.getElementById('table-play-area');
+  playArea.innerHTML = `
+    <div class="game-table">
+      <div class="hand-container" id="ai-hand-area"></div>
+      
+      <div class="table-area" id="center-table">
+        <div id="stock-deck-container"></div>
+        <div id="discard-container"></div>
+      </div>
+
+      <div style="color: #ffffff; font-weight: 600; text-align: center; margin-bottom: 5px;">
+        Active Suit: <strong>${getSuitSymbol(currentSuit)} ${currentSuit}</strong>
+      </div>
+
+      <div class="hand-container" id="player-hand-area"></div>
+    </div>
+  `;
+
+  // Render AI Hand (Face Down)
+  const aiArea = document.getElementById('ai-hand-area');
+  aiHand.forEach(card => aiArea.appendChild(card.renderHTML()));
+
+  // Render Stock Deck
+  const stockContainer = document.getElementById('stock-deck-container');
+  if (deck.cards.length > 0) {
+    const stockCard = new Card(SUITS[0], RANKS[0], false);
+    stockContainer.appendChild(stockCard.renderHTML(() => handleDrawCard()));
+  } else {
+    stockContainer.innerHTML = `<div class="card back" style="opacity: 0.3;"></div>`;
   }
 
-  renderInto(containerElement) {
-    containerElement.innerHTML = '';
-    this.cards.forEach(card => {
-      containerElement.appendChild(card.renderHTML());
-    });
+  // Render Discard Pile
+  const discardContainer = document.getElementById('discard-container');
+  const topCard = discardPile[discardPile.length - 1];
+  discardContainer.appendChild(topCard.renderHTML());
+
+  // Render Player Hand
+  const playerArea = document.getElementById('player-hand-area');
+  playerHand.forEach((card, index) => {
+    playerArea.appendChild(card.renderHTML(() => handlePlayerCardClick(index)));
+  });
+}
+
+function getSuitSymbol(suitName) {
+  const s = SUITS.find(item => item.name === suitName);
+  return s ? s.symbol : '';
+}
+
+function handlePlayerCardClick(index) {
+  if (!isPlayerTurn) return;
+
+  const card = playerHand[index];
+  const isEight = card.rank.rank === '8';
+  const matchesSuit = card.suit.name === currentSuit;
+  const matchesRank = card.rank.rank === currentRank;
+
+  if (isEight) {
+    pendingEightCardIndex = index;
+    openModal('suit-picker-modal');
+    return;
+  }
+
+  if (matchesSuit || matchesRank) {
+    playPlayerCard(index, card.suit.name);
+  } else {
+    alert("Invalid card! Play a matching rank, suit, or an 8.");
   }
 }
 
-/* Navigation & Modal Controllers */
+function selectEightSuit(suitName) {
+  closeModal('suit-picker-modal');
+  if (pendingEightCardIndex !== null) {
+    playPlayerCard(pendingEightCardIndex, suitName);
+    pendingEightCardIndex = null;
+  }
+}
+
+function playPlayerCard(index, chosenSuit) {
+  const card = playerHand.splice(index, 1)[0];
+  discardPile.push(card);
+  currentSuit = chosenSuit;
+  currentRank = card.rank.rank;
+
+  if (checkWinner()) return;
+
+  isPlayerTurn = false;
+  renderBoard();
+  setTimeout(runAITurn, 1200);
+}
+
+function handleDrawCard() {
+  if (!isPlayerTurn) return;
+
+  if (deck.cards.length > 0) {
+    playerHand.push(deck.draw());
+    renderBoard();
+  } else {
+    alert("No more cards in stock deck! Turn skipped.");
+    isPlayerTurn = false;
+    setTimeout(runAITurn, 1000);
+  }
+}
+
+/* AI Turn Logic */
+function runAITurn() {
+  if (isPlayerTurn) return;
+
+  // Find playable cards
+  let playableIndices = [];
+  aiHand.forEach((card, index) => {
+    if (card.rank.rank === '8' || card.suit.name === currentSuit || card.rank.rank === currentRank) {
+      playableIndices.push(index);
+    }
+  });
+
+  if (playableIndices.length > 0) {
+    const chosenIndex = playableIndices[0];
+    const card = aiHand.splice(chosenIndex, 1)[0];
+    card.isFaceUp = true;
+    discardPile.push(card);
+
+    if (card.rank.rank === '8') {
+      // Pick AI's most frequent suit
+      currentSuit = aiHand.length > 0 ? aiHand[0].suit.name : 'Spades';
+    } else {
+      currentSuit = card.suit.name;
+    }
+    currentRank = card.rank.rank;
+  } else if (deck.cards.length > 0) {
+    const drawnCard = deck.draw();
+    drawnCard.isFaceUp = false;
+    aiHand.push(drawnCard);
+  }
+
+  if (checkWinner()) return;
+
+  isPlayerTurn = true;
+  renderBoard();
+}
+
+function checkWinner() {
+  if (playerHand.length === 0) {
+    renderBoard();
+    setTimeout(() => alert("🎉 You Win Crazy Eights!"), 100);
+    return true;
+  }
+  if (aiHand.length === 0) {
+    renderBoard();
+    setTimeout(() => alert("🤖 AI Wins Crazy Eights!"), 100);
+    return true;
+  }
+  return false;
+}
+
+/* Navigation Helpers */
 function navigateTo(screenId) {
-  document.querySelectorAll('.screen').forEach(screen => {
-    screen.classList.remove('active');
-  });
-  document.querySelectorAll('.modal').forEach(modal => {
-    modal.classList.remove('active');
-  });
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
   const target = document.getElementById(screenId);
   if (target) target.classList.add('active');
 }
@@ -149,41 +319,4 @@ function openGameSettingsFromInGame() {
   document.getElementById('game-settings-title').textContent = `${activeTitle} Settings`;
   closeModal('in-game-settings-modal');
   openModal('game-settings-modal');
-}
-
-// Game Launcher Test Harness
-let currentDeck = null;
-let playerHand = null;
-
-function launchGame(gameTitle) {
-  document.getElementById('active-game-title').textContent = gameTitle;
-  navigateTo('game-screen');
-
-  // Initialize interactive demo deck on play area
-  const playArea = document.getElementById('table-play-area');
-  playArea.innerHTML = `
-    <div class="game-table">
-      <div class="table-area" id="dealer-area"></div>
-      <div class="table-area" id="center-table"></div>
-      <div class="hand-container" id="player-hand-area"></div>
-    </div>
-  `;
-
-  // Demo deal to verify engine functionality
-  currentDeck = new Deck();
-  currentDeck.shuffle();
-  playerHand = new Hand();
-
-  for (let i = 0; i < 5; i++) {
-    playerHand.addCard(currentDeck.draw());
-  }
-
-  // Draw face down card in center table
-  const centerTable = document.getElementById('center-table');
-  const stockCard = currentDeck.draw();
-  stockCard.isFaceUp = false;
-  centerTable.appendChild(stockCard.renderHTML());
-
-  // Render player hand
-  playerHand.renderInto(document.getElementById('player-hand-area'));
 }
