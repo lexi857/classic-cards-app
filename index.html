@@ -206,16 +206,26 @@
   </div>
 </div>
 
-<!-- Game Over Modal -->
-<div id="game-over-modal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header centered-header">
-      <h3 id="game-over-title">Game Over</h3>
-    </div>
-    <p id="game-over-message" style="text-align: center; margin: 15px 0 25px 0; font-size: 1.1rem; line-height: 1.4;"></p>
+<!-- End of Round Modal -->
+<div id="round-over-modal" class="modal">
+  <div class="modal-content" style="text-align: center; max-width: 320px;">
+    <h3 id="round-result-title" style="margin-bottom: 15px; color: #ffffff; font-size: 1.4rem;"></h3>
+    <div id="round-scores-body" style="color: #e0e0e0; font-size: 1.05rem; line-height: 1.6; margin-bottom: 20px;"></div>
     <div class="button-stack">
-      <button class="btn-gold" onclick="restartCrazyEights()">Play Again</button>
-      <button class="btn-gold" onclick="closeModal('game-over-modal'); navigateTo('main-menu-screen');">Return to Menu</button>
+      <button class="btn-gold" onclick="nextCrazyEightsRound()">Continue</button>
+      <button class="btn-gold" onclick="closeModal('round-over-modal'); navigateTo('main-menu-screen');">Return To Menu</button>
+    </div>
+  </div>
+</div>
+
+<!-- End of Game Modal -->
+<div id="game-over-modal" class="modal">
+  <div class="modal-content" style="text-align: center; max-width: 320px;">
+    <h3 id="game-result-title" style="margin-bottom: 15px; color: #ffffff; font-size: 1.5rem;"></h3>
+    <div id="game-scores-body" style="color: #e0e0e0; font-size: 1.05rem; line-height: 1.6; margin-bottom: 20px;"></div>
+    <div class="button-stack">
+      <button class="btn-gold" onclick="restartCrazyEightsGame()">Play Again</button>
+      <button class="btn-gold" onclick="closeModal('game-over-modal'); navigateTo('main-menu-screen');">Return To Menu</button>
     </div>
   </div>
 </div>
