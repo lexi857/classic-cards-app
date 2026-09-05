@@ -109,8 +109,9 @@ html, body {
   color: #ffffff;
   font-weight: 700;
   margin: 0;
-  text-align: left;
-  padding-left: 0;
+  flex: 1;
+  text-align: center;
+  padding-left: 30px; /* Exact offset matching .game-title-btn padding */
 }
 
 .header-gear-btn {
@@ -118,9 +119,12 @@ html, body {
   border: none;
   color: #ffffff;
   font-size: 1.4rem;
-  padding: 0 8px;
+  padding: 0 18px; /* Exact offset matching .game-gear-btn right padding */
   cursor: pointer;
   outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Vertical Scrolling Game List */
