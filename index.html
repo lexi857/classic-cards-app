@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#1b5e20" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Classic Cards</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -37,7 +39,6 @@
     </header>
 
     <main class="game-list">
-      <!-- Game Row Pattern: Unified Gold Bar -->
       <div class="game-bar-row">
         <button class="game-title-btn" onclick="launchGame('Crazy Eights')">Crazy Eights</button>
         <button class="game-gear-btn" onclick="openGameSettings('Crazy Eights')" aria-label="Crazy Eights Settings">⚙</button>
@@ -92,12 +93,12 @@
   <!-- Screen 3: Game Screen -->
   <section id="game-screen" class="screen">
     <header class="top-bar">
-      <h2 id="active-game-title">Game Title</h2>
+      <h2 id="active-game-title" class="app-title-sm">Game Title</h2>
       <button class="header-gear-btn" onclick="openModal('in-game-settings-modal')" aria-label="In-Game Settings">⚙</button>
     </header>
 
     <div id="table-play-area">
-      <!-- Cards render here in Phase 2 -->
+      <!-- Game Canvas Render Point -->
     </div>
   </section>
 
@@ -141,17 +142,17 @@
         <div class="setting-group">
           <span class="setting-label">Input Method</span>
           <div class="option-chips">
-            <button class="chip active" onclick="selectChip(this)">Tap</button>
-            <button class="chip" onclick="selectChip(this)">Drag & Drop</button>
+            <button type="button" class="chip active" onclick="selectChip(this)">Tap</button>
+            <button type="button" class="chip" onclick="selectChip(this)">Drag & Drop</button>
           </div>
         </div>
 
         <div class="setting-group">
           <span class="setting-label">AI Difficulty</span>
           <div class="option-chips">
-            <button class="chip active" onclick="selectChip(this)">Easy</button>
-            <button class="chip" onclick="selectChip(this)">Medium</button>
-            <button class="chip" onclick="selectChip(this)">Hard</button>
+            <button type="button" class="chip active" onclick="selectChip(this)">Easy</button>
+            <button type="button" class="chip" onclick="selectChip(this)">Medium</button>
+            <button type="button" class="chip" onclick="selectChip(this)">Hard</button>
           </div>
         </div>
       </div>
