@@ -47,10 +47,12 @@ function launchGame(gameName) {
 }
 
 function selectChip(element) {
-  // Find all chips in the same option group and unselect them
+  // Find all chips in the same option group and remove active state
   const parent = element.parentElement;
-  parent.querySelectorAll('.chip').forEach(chip => chip.classList.remove('active'));
+  if (parent) {
+    parent.querySelectorAll('.chip').forEach(chip => chip.classList.remove('active'));
+  }
   
-  // Select the tapped chip
+  // Add active state to tapped chip
   element.classList.add('active');
 }
