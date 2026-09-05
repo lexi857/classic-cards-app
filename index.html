@@ -8,133 +8,157 @@
 </head>
 <body>
 
+  <!-- Screen 1: Home Screen -->
   <section id="home-screen" class="screen active">
-    <div class="brand-container">
-      <h1 class="app-title">Classic Cards</h1>
+    <div class="home-top">
+      <h1 class="app-title">CLASSIC CARDS</h1>
       <div class="app-logo" aria-label="Spades, Hearts, Clubs, Diamonds">
-        ♠ ♥ ♣ ♦
+        <span class="suit black">♠</span>
+        <span class="suit red">♥</span>
+        <span class="suit black">♣</span>
+        <span class="suit red">♦</span>
       </div>
     </div>
     
-    <div class="button-group">
-      <button class="btn-gold" onclick="navigateTo('main-menu-screen')">Single Player</button>
-      <button class="btn-gold" onclick="navigateTo('main-menu-screen')">Multiplayer</button>
-      <button class="btn-gold" onclick="openModal('tour-modal')">Classic Cards Tour</button>
+    <div class="home-bottom">
+      <div class="button-stack">
+        <button class="btn-gold" onclick="navigateTo('main-menu-screen')">Single Player</button>
+        <button class="btn-gold" onclick="navigateTo('main-menu-screen')">Multiplayer</button>
+        <button class="btn-gold" onclick="openModal('tour-modal')">Classic Cards Tour</button>
+      </div>
     </div>
   </section>
 
+  <!-- Screen 2: Main Menu Screen -->
   <section id="main-menu-screen" class="screen">
     <header class="top-bar">
       <h1 class="app-title-sm">Classic Cards</h1>
-      <button class="icon-btn" onclick="openModal('app-settings-modal')" aria-label="App Settings">⚙</button>
+      <button class="header-gear-btn" onclick="openModal('app-settings-modal')" aria-label="App Settings">⚙</button>
     </header>
 
     <main class="game-list">
-      <div class="game-row">
-        <button class="btn-game" onclick="launchGame('Crazy Eights')">Crazy Eights</button>
-        <button class="icon-btn-sm" onclick="openGameSettings('Crazy Eights')" aria-label="Crazy Eights Settings">⚙</button>
+      <!-- Game Row Pattern: Unified Gold Bar -->
+      <div class="game-bar-row">
+        <button class="game-title-btn" onclick="launchGame('Crazy Eights')">Crazy Eights</button>
+        <button class="game-gear-btn" onclick="openGameSettings('Crazy Eights')" aria-label="Crazy Eights Settings">⚙</button>
       </div>
-      <div class="game-row">
-        <button class="btn-game" onclick="launchGame('Baccarat')">Baccarat</button>
-        <button class="icon-btn-sm" onclick="openGameSettings('Baccarat')" aria-label="Baccarat Settings">⚙</button>
+      <div class="game-bar-row">
+        <button class="game-title-btn" onclick="launchGame('Baccarat')">Baccarat</button>
+        <button class="game-gear-btn" onclick="openGameSettings('Baccarat')" aria-label="Baccarat Settings">⚙</button>
       </div>
-      <div class="game-row">
-        <button class="btn-game" onclick="launchGame('Blackjack')">Blackjack</button>
-        <button class="icon-btn-sm" onclick="openGameSettings('Blackjack')" aria-label="Blackjack Settings">⚙</button>
+      <div class="game-bar-row">
+        <button class="game-title-btn" onclick="launchGame('Blackjack')">Blackjack</button>
+        <button class="game-gear-btn" onclick="openGameSettings('Blackjack')" aria-label="Blackjack Settings">⚙</button>
       </div>
-      <div class="game-row">
-        <button class="btn-game" onclick="launchGame('Solitaire')">Solitaire</button>
-        <button class="icon-btn-sm" onclick="openGameSettings('Solitaire')" aria-label="Solitaire Settings">⚙</button>
+      <div class="game-bar-row">
+        <button class="game-title-btn" onclick="launchGame('Solitaire')">Solitaire</button>
+        <button class="game-gear-btn" onclick="openGameSettings('Solitaire')" aria-label="Solitaire Settings">⚙</button>
       </div>
-      <div class="game-row">
-        <button class="btn-game" onclick="launchGame('Speed')">Speed</button>
-        <button class="icon-btn-sm" onclick="openGameSettings('Speed')" aria-label="Speed Settings">⚙</button>
+      <div class="game-bar-row">
+        <button class="game-title-btn" onclick="launchGame('Speed')">Speed</button>
+        <button class="game-gear-btn" onclick="openGameSettings('Speed')" aria-label="Speed Settings">⚙</button>
       </div>
-      <div class="game-row">
-        <button class="btn-game" onclick="launchGame('Five Card Draw')">Five Card Draw</button>
-        <button class="icon-btn-sm" onclick="openGameSettings('Five Card Draw')" aria-label="Five Card Draw Settings">⚙</button>
+      <div class="game-bar-row">
+        <button class="game-title-btn" onclick="launchGame('Five Card Draw')">Five Card Draw</button>
+        <button class="game-gear-btn" onclick="openGameSettings('Five Card Draw')" aria-label="Five Card Draw Settings">⚙</button>
       </div>
-      <div class="game-row">
-        <button class="btn-game" onclick="launchGame('Texas Hold’em')">Texas Hold’em</button>
-        <button class="icon-btn-sm" onclick="openGameSettings('Texas Hold’em')" aria-label="Texas Hold’em Settings">⚙</button>
+      <div class="game-bar-row">
+        <button class="game-title-btn" onclick="launchGame('Texas Hold’em')">Texas Hold’em</button>
+        <button class="game-gear-btn" onclick="openGameSettings('Texas Hold’em')" aria-label="Texas Hold’em Settings">⚙</button>
       </div>
-      <div class="game-row">
-        <button class="btn-game" onclick="launchGame('Rummy')">Rummy</button>
-        <button class="icon-btn-sm" onclick="openGameSettings('Rummy')" aria-label="Rummy Settings">⚙</button>
+      <div class="game-bar-row">
+        <button class="game-title-btn" onclick="launchGame('Rummy')">Rummy</button>
+        <button class="game-gear-btn" onclick="openGameSettings('Rummy')" aria-label="Rummy Settings">⚙</button>
       </div>
-      <div class="game-row">
-        <button class="btn-game" onclick="launchGame('Gin Rummy')">Gin Rummy</button>
-        <button class="icon-btn-sm" onclick="openGameSettings('Gin Rummy')" aria-label="Gin Rummy Settings">⚙</button>
+      <div class="game-bar-row">
+        <button class="game-title-btn" onclick="launchGame('Gin Rummy')">Gin Rummy</button>
+        <button class="game-gear-btn" onclick="openGameSettings('Gin Rummy')" aria-label="Gin Rummy Settings">⚙</button>
       </div>
-      <div class="game-row">
-        <button class="btn-game" onclick="launchGame('Hearts')">Hearts</button>
-        <button class="icon-btn-sm" onclick="openGameSettings('Hearts')" aria-label="Hearts Settings">⚙</button>
+      <div class="game-bar-row">
+        <button class="game-title-btn" onclick="launchGame('Hearts')">Hearts</button>
+        <button class="game-gear-btn" onclick="openGameSettings('Hearts')" aria-label="Hearts Settings">⚙</button>
       </div>
-      <div class="game-row">
-        <button class="btn-game" onclick="launchGame('Spades')">Spades</button>
-        <button class="icon-btn-sm" onclick="openGameSettings('Spades')" aria-label="Spades Settings">⚙</button>
+      <div class="game-bar-row">
+        <button class="game-title-btn" onclick="launchGame('Spades')">Spades</button>
+        <button class="game-gear-btn" onclick="openGameSettings('Spades')" aria-label="Spades Settings">⚙</button>
       </div>
-      <div class="game-row">
-        <button class="btn-game" onclick="launchGame('Euchre')">Euchre</button>
-        <button class="icon-btn-sm" onclick="openGameSettings('Euchre')" aria-label="Euchre Settings">⚙</button>
+      <div class="game-bar-row">
+        <button class="game-title-btn" onclick="launchGame('Euchre')">Euchre</button>
+        <button class="game-gear-btn" onclick="openGameSettings('Euchre')" aria-label="Euchre Settings">⚙</button>
       </div>
     </main>
   </section>
 
+  <!-- Screen 3: Game Screen -->
   <section id="game-screen" class="screen">
     <header class="top-bar">
       <h2 id="active-game-title">Game Title</h2>
-      <button class="icon-btn" onclick="openModal('in-game-settings-modal')" aria-label="In-Game Settings">⚙</button>
+      <button class="header-gear-btn" onclick="openModal('in-game-settings-modal')" aria-label="In-Game Settings">⚙</button>
     </header>
 
     <div id="table-play-area">
-      </div>
+      <!-- Cards render here in Phase 2 -->
+    </div>
   </section>
 
+  <!-- Modal 1: App Settings -->
   <div id="app-settings-modal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
         <h3>App Settings</h3>
         <button class="close-btn" onclick="closeModal('app-settings-modal')">&times;</button>
       </div>
+      
       <div class="setting-item">
-        <label for="music-toggle">Music</label>
-        <input type="checkbox" id="music-toggle" checked />
+        <span>Music</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="music-toggle" checked />
+          <span class="slider"></span>
+        </label>
       </div>
+
       <div class="setting-item">
-        <label for="sfx-toggle">Sound Effects</label>
-        <input type="checkbox" id="sfx-toggle" checked />
+        <span>Sound Effects</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="sfx-toggle" checked />
+          <span class="slider"></span>
+        </label>
       </div>
+
       <button class="btn-gold full-width" onclick="navigateTo('home-screen')">Return To Home</button>
     </div>
   </div>
 
+  <!-- Modal 2: Game Settings -->
   <div id="game-settings-modal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
         <h3 id="game-settings-title">Game Settings</h3>
         <button class="close-btn" onclick="closeModal('game-settings-modal')">&times;</button>
       </div>
+
       <div id="dynamic-game-options">
-        <div class="setting-item">
-          <label>Input Method</label>
-          <select class="gold-select">
-            <option>Tap</option>
-            <option>Drag and Drop</option>
-          </select>
+        <div class="setting-group">
+          <span class="setting-label">Input Method</span>
+          <div class="option-chips">
+            <button class="chip active" onclick="selectChip(this)">Tap</button>
+            <button class="chip" onclick="selectChip(this)">Drag & Drop</button>
+          </div>
         </div>
-        <div class="setting-item">
-          <label>AI Difficulty</label>
-          <select class="gold-select">
-            <option>Easy</option>
-            <option>Medium</option>
-            <option>Hard</option>
-          </select>
+
+        <div class="setting-group">
+          <span class="setting-label">AI Difficulty</span>
+          <div class="option-chips">
+            <button class="chip active" onclick="selectChip(this)">Easy</button>
+            <button class="chip" onclick="selectChip(this)">Medium</button>
+            <button class="chip" onclick="selectChip(this)">Hard</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Modal 3: In-Game Settings -->
   <div id="in-game-settings-modal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
@@ -151,6 +175,7 @@
     </div>
   </div>
 
+  <!-- Modal 4: Classic Cards Tour -->
   <div id="tour-modal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
