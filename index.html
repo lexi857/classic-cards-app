@@ -189,36 +189,28 @@
     </div>
   </div>
 
+  <!-- Suit Selection Modal for Crazy Eights -->
+  <div id="suit-picker-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header centered-header">
+        <h3>Choose a Suit</h3>
+      </div>
+      <div style="display: flex; justify-content: space-around; padding: 15px 0;">
+        <button class="btn-gold" style="font-size: 1.8rem; padding: 10px 15px;" onclick="selectEightSuit('Spades')">♠</button>
+        <button class="btn-gold" style="font-size: 1.8rem; padding: 10px 15px; color: #d32f2f;" onclick="selectEightSuit('Hearts')">♥</button>
+        <button class="btn-gold" style="font-size: 1.8rem; padding: 10px 15px;" onclick="selectEightSuit('Clubs')">♣</button>
+        <button class="btn-gold" style="font-size: 1.8rem; padding: 10px 15px; color: #d32f2f;" onclick="selectEightSuit('Diamonds')">♦</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Over Modal -->
+  <div id="game-over-modal" class="modal">
+    <div class="modal-content">
+      <!-- Dynamically filled on game finish -->
+    </div>
+  </div>
+
   <script src="app.js"></script>
-
-<!-- Suit Selection Modal for Crazy Eights -->
-<div id="suit-picker-modal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header centered-header">
-      <h3>Choose a Suit</h3>
-    </div>
-    <div style="display: flex; justify-content: space-around; padding: 15px 0;">
-      <button class="btn-gold" style="font-size: 1.8rem; padding: 10px 15px;" onclick="selectEightSuit('Spades')">♠</button>
-      <button class="btn-gold" style="font-size: 1.8rem; padding: 10px 15px; color: #d32f2f;" onclick="selectEightSuit('Hearts')">♥</button>
-      <button class="btn-gold" style="font-size: 1.8rem; padding: 10px 15px;" onclick="selectEightSuit('Clubs')">♣</button>
-      <button class="btn-gold" style="font-size: 1.8rem; padding: 10px 15px; color: #d32f2f;" onclick="selectEightSuit('Diamonds')">♦</button>
-    </div>
-  </div>
-</div>
-
-<!-- Game Over Modal -->
-<div id="game-over-modal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header centered-header">
-      <h3 id="game-over-title">Game Over</h3>
-    </div>
-    <p id="game-over-message" style="text-align: center; margin: 15px 0 25px 0; font-size: 1.1rem; line-height: 1.4;"></p>
-    <div class="button-stack">
-      <button class="btn-gold" onclick="restartCrazyEights()">Play Again</button>
-      <button class="btn-gold" onclick="closeModal('game-over-modal'); navigateTo('main-menu-screen');">Return to Menu</button>
-    </div>
-  </div>
-</div>
-  
 </body>
 </html>
