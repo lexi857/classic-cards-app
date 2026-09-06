@@ -236,8 +236,6 @@ body, html {
   justify-content: space-between;
   padding: 4px;
   cursor: pointer;
-  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), left 0.4s ease, top 0.4s ease, opacity 0.25s ease;
-  will-change: transform, left, top;
 }
 
 .card.red {
@@ -332,4 +330,13 @@ body, html {
   .hand-container .card {
     margin-left: -36px;
   }
+}
+
+/* Floating Animation Card */
+.animating-card {
+  position: fixed !important;
+  z-index: 1000 !important;
+  margin: 0 !important;
+  transition: transform 0.45s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  pointer-events: none;
 }
