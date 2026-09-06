@@ -1,12 +1,12 @@
 /* ==========================================================================
-   CLASSIC CARDS: CRAZY EIGHTS ENGINE & SCORING SYSTEM
+   CLASSIC CARDS: CRAZY EIGHTS ENGINE WITH PHYSICAL SLIDING ANIMATION
    ========================================================================== */
 
-const TARGET_SCORE = 100; // Total accumulated score threshold to finish full game
+const TARGET_SCORE = 100;
 
 let playerScore = 0;
 let opponentScore = 0;
-let highestScore = 135; // Target anchor benchmark
+let highestScore = 135;
 
 const SUITS = [
   { name: 'Spades', symbol: '♠', color: 'black' },
@@ -41,6 +41,7 @@ class Card {
 
   renderHTML(onClickHandler = null, extraClasses = '') {
     const cardDiv = document.createElement('div');
+    cardDiv.dataset.cardId = this.id;
     
     if (!this.isFaceUp) {
       cardDiv.className = `card back ${extraClasses}`.trim();
@@ -92,7 +93,6 @@ class Deck {
   }
 }
 
-/* State Engine Variables */
 let deck, playerHand, aiHand, discardPile;
 let currentSuit = null;
 let currentRank = null;
@@ -180,11 +180,9 @@ function renderBoard() {
     </div>
   `;
 
-  // Render AI Hand
   const aiArea = document.getElementById('ai-hand-area');
   aiHand.forEach(card => aiArea.appendChild(card.renderHTML()));
 
-  // Render Stock Deck
   const stockContainer = document.getElementById('stock-deck-container');
   if (deck.cards.length > 0) {
     const stockCard = new Card(SUITS[0], RANKS[0], false);
@@ -193,12 +191,12 @@ function renderBoard() {
     stockContainer.innerHTML = `<div class="card back" style="opacity: 0.25; cursor: default;"></div>`;
   }
 
-  // Render Discard Pile
   const discardContainer = document.getElementById('discard-container');
-  const topCard = discardPile[discardPile.length - 1];
-  discardContainer.appendChild(topCard.renderHTML(null, 'playing'));
+  if (discardPile.length > 0) {
+    const topCard = discardPile[discardPile.length - 1];
+    discardContainer.appendChild(topCard.renderHTML(null, 'playing'));
+  }
 
-  // Render Player Hand
   const playerArea = document.getElementById('player-hand-area');
   playerHand.forEach((card, index) => {
     playerArea.appendChild(card.renderHTML(() => handlePlayerCardClick(index)));
@@ -208,6 +206,34 @@ function renderBoard() {
 function getSuitSymbol(suitName) {
   const s = SUITS.find(item => item.name === suitName);
   return s ? s.symbol : '';
+}
+
+/* Coordinate Card Slide Motion Engine */
+function animateCardTranslation(startElem, targetElem, onComplete) {
+  const startRect = startElem.getBoundingClientRect();
+  const targetRect = targetElem.getBoundingClientRect();
+
+  const clone = startElem.cloneNode(true);
+  clone.classList.add('animating-card');
+  clone.style.left = `${startRect.left}px`;
+  clone.style.top = `${startRect.top}px`;
+  clone.style.width = `${startRect.width}px`;
+  clone.style.height = `${startRect.height}px`;
+
+  document.body.appendChild(clone);
+  startElem.style.visibility = 'hidden';
+
+  const deltaX = targetRect.left - startRect.left;
+  const deltaY = targetRect.top - startRect.top;
+
+  requestAnimationFrame(() => {
+    clone.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+  });
+
+  setTimeout(() => {
+    clone.remove();
+    onComplete();
+  }, 450);
 }
 
 function handlePlayerCardClick(index) {
@@ -239,48 +265,59 @@ function selectEightSuit(suitName) {
 
 function playPlayerCard(index, chosenSuit) {
   isAnimating = true;
+  const playerArea = document.getElementById('player-hand-area');
+  const cardElem = playerArea.children[index];
+  const discardElem = document.getElementById('discard-container');
+
   const card = playerHand.splice(index, 1)[0];
-  discardPile.push(card);
-  currentSuit = chosenSuit;
-  currentRank = card.rank.rank;
 
-  renderBoard();
+  animateCardTranslation(cardElem, discardElem, () => {
+    discardPile.push(card);
+    currentSuit = chosenSuit;
+    currentRank = card.rank.rank;
 
-  if (checkWinner()) return;
+    renderBoard();
 
-  isPlayerTurn = false;
-  setTimeout(() => {
-    isAnimating = false;
-    runAITurn();
-  }, 600);
+    if (checkWinner()) {
+      isAnimating = false;
+      return;
+    }
+
+    isPlayerTurn = false;
+    setTimeout(() => {
+      isAnimating = false;
+      runAITurn();
+    }, 300);
+  });
 }
 
 function handleDrawCard() {
   if (!isPlayerTurn || isAnimating) return;
-
-  // Strict Rule: Player cannot draw if they hold a valid play
   if (hasValidPlay(playerHand)) return;
 
   if (deck.cards.length > 0) {
     isAnimating = true;
-    const drawnCard = deck.draw();
-    playerHand.push(drawnCard);
-    renderBoard();
+    const stockElem = document.getElementById('stock-deck-container').firstElementChild;
+    const playerArea = document.getElementById('player-hand-area');
 
-    setTimeout(() => {
-      isAnimating = false;
+    const drawnCard = deck.draw();
+
+    animateCardTranslation(stockElem, playerArea, () => {
+      playerHand.push(drawnCard);
+      renderBoard();
+
       if (!hasValidPlay([drawnCard])) {
         isPlayerTurn = false;
-        setTimeout(runAITurn, 600);
+        setTimeout(runAITurn, 500);
       }
-    }, 400);
+      isAnimating = false;
+    });
   } else {
     isPlayerTurn = false;
-    setTimeout(runAITurn, 600);
+    setTimeout(runAITurn, 500);
   }
 }
 
-/* AI Turn Handler */
 function runAITurn() {
   if (isPlayerTurn || isAnimating) return;
 
@@ -294,51 +331,61 @@ function runAITurn() {
   if (playableIndices.length > 0) {
     isAnimating = true;
     const chosenIndex = playableIndices[0];
+    const aiArea = document.getElementById('ai-hand-area');
+    const cardElem = aiArea.children[chosenIndex];
+    const discardElem = document.getElementById('discard-container');
+
     const card = aiHand.splice(chosenIndex, 1)[0];
     card.isFaceUp = true;
-    discardPile.push(card);
 
-    if (card.rank.rank === '8') {
-      currentSuit = aiHand.length > 0 ? aiHand[0].suit.name : 'Spades';
-    } else {
-      currentSuit = card.suit.name;
-    }
-    currentRank = card.rank.rank;
+    animateCardTranslation(cardElem, discardElem, () => {
+      discardPile.push(card);
+      if (card.rank.rank === '8') {
+        currentSuit = aiHand.length > 0 ? aiHand[0].suit.name : 'Spades';
+      } else {
+        currentSuit = card.suit.name;
+      }
+      currentRank = card.rank.rank;
 
-    renderBoard();
+      renderBoard();
 
-    if (checkWinner()) return;
+      if (checkWinner()) {
+        isAnimating = false;
+        return;
+      }
 
-    setTimeout(() => {
       isAnimating = false;
       isPlayerTurn = true;
       renderBoard();
-    }, 600);
+    });
   } else if (deck.cards.length > 0) {
     isAnimating = true;
+    const stockElem = document.getElementById('stock-deck-container').firstElementChild;
+    const aiArea = document.getElementById('ai-hand-area');
+
     const drawnCard = deck.draw();
     drawnCard.isFaceUp = false;
-    aiHand.push(drawnCard);
-    renderBoard();
 
-    setTimeout(() => {
-      isAnimating = false;
+    animateCardTranslation(stockElem, aiArea, () => {
+      aiHand.push(drawnCard);
+      renderBoard();
+
       drawnCard.isFaceUp = true;
       if (drawnCard.rank.rank === '8' || drawnCard.suit.name === currentSuit || drawnCard.rank.rank === currentRank) {
-        setTimeout(runAITurn, 400);
+        setTimeout(runAITurn, 300);
       } else {
         drawnCard.isFaceUp = false;
         isPlayerTurn = true;
         renderBoard();
       }
-    }, 500);
+      isAnimating = false;
+    });
   } else {
     isPlayerTurn = true;
     renderBoard();
   }
 }
 
-/* Scoring Engine & End Screen Modals */
 function calculateHandPoints(hand) {
   return hand.reduce((sum, card) => {
     const r = card.rank.rank;
