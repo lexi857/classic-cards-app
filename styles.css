@@ -413,15 +413,25 @@ input:checked + .slider:before {
   font-size: 1.6rem;
 }
 
+/* Solid Blue Card Back with White Border and White Logo */
 .card.back {
-  background: repeating-linear-gradient(
-    45deg,
-    #1b4f72,
-    #1b4f72 8px,
-    #154360 8px,
-    #154360 16px
-  );
+  background-color: #0d47a1;
   border: 2px solid #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.card.back::after {
+  content: "CLASSIC\A CARDS";
+  white-space: pre-wrap;
+  color: #ffffff;
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  line-height: 1.1;
+  opacity: 0.9;
 }
 
 .card.back * {
@@ -450,15 +460,23 @@ input:checked + .slider:before {
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding-bottom: 10px;
+  max-width: 100%;
+  padding: 10px 5px;
+  min-height: 110px;
 }
 
 .hand-container .card {
-  margin-left: -20px;
+  margin-left: -28px;
 }
 
 .hand-container .card:first-child {
   margin-left: 0;
+}
+
+@media (max-width: 380px) {
+  .hand-container .card {
+    margin-left: -34px;
+  }
 }
 
 /* Card Animation & Physical Motion System */
@@ -467,7 +485,6 @@ input:checked + .slider:before {
   will-change: transform;
 }
 
-/* Card Draw Animation from Stock */
 @keyframes drawCardAnim {
   0% {
     transform: scale(0.8) translateY(-40px);
@@ -483,7 +500,6 @@ input:checked + .slider:before {
   animation: drawCardAnim 0.35s ease-out forwards;
 }
 
-/* Card Play Animation into Discard */
 @keyframes playCardAnim {
   0% {
     transform: scale(1.1) translateY(20px);
@@ -496,31 +512,3 @@ input:checked + .slider:before {
 .card.playing {
   animation: playCardAnim 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
-
-/* Active Hand Overflow & Layout Fix */
-.hand-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  max-width: 100%;
-  padding: 10px 5px;
-  min-height: 110px;
-}
-
-/* Adaptive dynamic overlapping for cards */
-.hand-container .card {
-  margin-left: -28px;
-}
-
-.hand-container .card:first-child {
-  margin-left: 0;
-}
-
-/* Responsive shrink on larger hands */
-@media (max-width: 380px) {
-  .hand-container .card {
-    margin-left: -34px;
-  }
-}
-
