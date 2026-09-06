@@ -5,211 +5,301 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Classic Cards</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Viewport & Screen Navigation Management */
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .screen {
+      display: none;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 16px;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Layout Containers */
+    .menu-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      max-width: 340px;
+    }
+
+    .header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 360px;
+      padding: 8px 0;
+    }
+
+    .game-list-scroll {
+      width: 100%;
+      max-width: 360px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-right: 4px;
+    }
+
+    .game-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .btn-settings-gear {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--gold-mid);
+      color: var(--gold-mid);
+      border-radius: 8px;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      color: var(--text-white);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Screen Container -->
-  <div id="app-container">
-
-    <!-- Home Screen -->
-    <section id="home-screen" class="screen active">
-      <div class="header-container">
-        <h1 class="app-title">Classic Cards</h1>
-        <div class="app-logo">♠ ♥ ♣ ♦</div>
-      </div>
-      <div class="button-stack">
-        <button class="btn-gold" onclick="navigateTo('main-menu-screen')">Single Player</button>
-        <button class="btn-gold" onclick="navigateTo('main-menu-screen')">Multiplayer</button>
-        <button class="btn-gold" onclick="openModal('tour-modal')">Classic Cards Tour</button>
-      </div>
-    </section>
-
-    <!-- Main Menu Screen -->
-    <section id="main-menu-screen" class="screen">
-      <div class="top-bar">
-        <h2>Classic Cards</h2>
-        <button class="icon-btn" onclick="openModal('app-settings-modal')">⚙️</button>
+  <!-- ======================================================================
+       1. HOME SCREEN
+       ====================================================================== -->
+  <section id="home-screen" class="screen active">
+    <div class="menu-container" style="margin-top: auto; margin-bottom: auto;">
+      <h1 style="font-size: 2.2rem; margin-bottom: 4px;">Classic Cards</h1>
+      <div class="app-logo-suits" style="font-size: 1.5rem; letter-spacing: 6px; margin-bottom: 24px;">
+        ♠ ♥ ♣ ♦
       </div>
       
-      <div class="game-list">
-        <div class="game-item">
-          <button class="btn-gold game-btn" onclick="launchGame('Crazy Eights')">Crazy Eights</button>
-          <button class="icon-btn" onclick="openGameSettings('Crazy Eights')">⚙️</button>
-        </div>
-        <div class="game-item">
-          <button class="btn-gold game-btn" onclick="launchGame('Baccarat')">Baccarat</button>
-          <button class="icon-btn" onclick="openGameSettings('Baccarat')">⚙️</button>
-        </div>
-        <div class="game-item">
-          <button class="btn-gold game-btn" onclick="launchGame('Blackjack')">Blackjack</button>
-          <button class="icon-btn" onclick="openGameSettings('Blackjack')">⚙️</button>
-        </div>
-        <div class="game-item">
-          <button class="btn-gold game-btn" onclick="launchGame('Solitaire')">Solitaire</button>
-          <button class="icon-btn" onclick="openGameSettings('Solitaire')">⚙️</button>
-        </div>
-        <div class="game-item">
-          <button class="btn-gold game-btn" onclick="launchGame('Speed')">Speed</button>
-          <button class="icon-btn" onclick="openGameSettings('Speed')">⚙️</button>
-        </div>
-        <div class="game-item">
-          <button class="btn-gold game-btn" onclick="launchGame('Five Card Draw')">Five Card Draw</button>
-          <button class="icon-btn" onclick="openGameSettings('Five Card Draw')">⚙️</button>
-        </div>
-        <div class="game-item">
-          <button class="btn-gold game-btn" onclick="launchGame('Texas Hold’em')">Texas Hold’em</button>
-          <button class="icon-btn" onclick="openGameSettings('Texas Hold’em')">⚙️</button>
-        </div>
-        <div class="game-item">
-          <button class="btn-gold game-btn" onclick="launchGame('Rummy')">Rummy</button>
-          <button class="icon-btn" onclick="openGameSettings('Rummy')">⚙️</button>
-        </div>
-        <div class="game-item">
-          <button class="btn-gold game-btn" onclick="launchGame('Gin Rummy')">Gin Rummy</button>
-          <button class="icon-btn" onclick="openGameSettings('Gin Rummy')">⚙️</button>
-        </div>
-        <div class="game-item">
-          <button class="btn-gold game-btn" onclick="launchGame('Hearts')">Hearts</button>
-          <button class="icon-btn" onclick="openGameSettings('Hearts')">⚙️</button>
-        </div>
-        <div class="game-item">
-          <button class="btn-gold game-btn" onclick="launchGame('Spades')">Spades</button>
-          <button class="icon-btn" onclick="openGameSettings('Spades')">⚙️</button>
-        </div>
-        <div class="game-item">
-          <button class="btn-gold game-btn" onclick="launchGame('Euchre')">Euchre</button>
-          <button class="icon-btn" onclick="openGameSettings('Euchre')">⚙️</button>
-        </div>
+      <button class="btn-gold" onclick="showScreen('main-menu-screen')">Single Player</button>
+      <button class="btn-gold" onclick="alert('Multiplayer coming soon!')">Multiplayer</button>
+      <button class="btn-gold" onclick="openModal('tour-modal')">Classic Cards Tour</button>
+    </div>
+  </section>
+
+  <!-- ======================================================================
+       2. MAIN MENU SCREEN (Game Selection)
+       ====================================================================== -->
+  <section id="main-menu-screen" class="screen">
+    <div class="header-bar">
+      <h2 style="font-size: 1.6rem;">Classic Cards</h2>
+      <button class="icon-btn" onclick="openModal('app-settings-modal')">⚙️</button>
+    </div>
+
+    <div class="game-list-scroll">
+      <!-- Game Rows -->
+      <div class="game-row">
+        <button class="btn-gold" onclick="showScreen('game-screen')">Crazy Eights</button>
+        <button class="btn-settings-gear" onclick="openModal('game-settings-modal')">⚙️</button>
       </div>
-    </section>
-
-    <!-- Game Screen -->
-    <section id="game-screen" class="screen">
-      <div class="top-bar">
-        <h2 id="active-game-title">Crazy Eights</h2>
-        <button class="icon-btn" onclick="openModal('in-game-settings-modal')">⚙️</button>
+      <div class="game-row">
+        <button class="btn-gold">Baccarat</button>
+        <button class="btn-settings-gear">⚙️</button>
       </div>
-      
-      <div id="table-play-area"></div>
-    </section>
+      <div class="game-row">
+        <button class="btn-gold">Blackjack</button>
+        <button class="btn-settings-gear">⚙️</button>
+      </div>
+      <div class="game-row">
+        <button class="btn-gold">Solitaire</button>
+        <button class="btn-settings-gear">⚙️</button>
+      </div>
+      <div class="game-row">
+        <button class="btn-gold">Speed</button>
+        <button class="btn-settings-gear">⚙️</button>
+      </div>
+      <div class="game-row">
+        <button class="btn-gold">Five Card Draw</button>
+        <button class="btn-settings-gear">⚙️</button>
+      </div>
+      <div class="game-row">
+        <button class="btn-gold">Texas Hold'em</button>
+        <button class="btn-settings-gear">⚙️</button>
+      </div>
+      <div class="game-row">
+        <button class="btn-gold">Rummy</button>
+        <button class="btn-settings-gear">⚙️</button>
+      </div>
+      <div class="game-row">
+        <button class="btn-gold">Gin Rummy</button>
+        <button class="btn-settings-gear">⚙️</button>
+      </div>
+      <div class="game-row">
+        <button class="btn-gold">Hearts</button>
+        <button class="btn-settings-gear">⚙️</button>
+      </div>
+      <div class="game-row">
+        <button class="btn-gold">Spades</button>
+        <button class="btn-settings-gear">⚙️</button>
+      </div>
+      <div class="game-row">
+        <button class="btn-gold">Euchre</button>
+        <button class="btn-settings-gear">⚙️</button>
+      </div>
+    </div>
+  </section>
 
-  </div>
+  <!-- ======================================================================
+       3. GAME PLAY SCREEN
+       ====================================================================== -->
+  <section id="game-screen" class="screen">
+    <div class="header-bar">
+      <h2 id="current-game-title" style="font-size: 1.4rem;">Crazy Eights</h2>
+      <button class="icon-btn" onclick="openModal('in-game-menu-modal')">⚙️</button>
+    </div>
 
+    <!-- Opponent Hand -->
+    <div class="opponent-hand" id="opponent-hand">
+      <div class="card card-back"><span class="card-back-logo">♠♥♣♦<br>Classic<br>Cards</span></div>
+      <div class="card card-back"><span class="card-back-logo">♠♥♣♦<br>Classic<br>Cards</span></div>
+      <div class="card card-back"><span class="card-back-logo">♠♥♣♦<br>Classic<br>Cards</span></div>
+    </div>
+
+    <!-- Play Area / Felt Table -->
+    <div style="display: flex; gap: 20px; align-items: center; margin: auto 0;">
+      <!-- Stock Deck -->
+      <div class="card card-back">
+        <span class="card-back-logo">♠♥♣♦<br>Classic<br>Cards</span>
+      </div>
+      <!-- Discard Pile -->
+      <div class="card black">
+        <div class="card-corner top-left">J<span>♣</span></div>
+        <div class="card-center">♣</div>
+        <div class="card-corner bottom-right">J<span>♣</span></div>
+      </div>
+    </div>
+
+    <!-- Player Hand -->
+    <div class="hand-container" id="player-hand">
+      <div class="card red">
+        <div class="card-corner top-left">8<span>♥</span></div>
+        <div class="card-center">♥</div>
+        <div class="card-corner bottom-right">8<span>♥</span></div>
+      </div>
+      <div class="card black">
+        <div class="card-corner top-left">10<span>♠</span></div>
+        <div class="card-center">♠</div>
+        <div class="card-corner bottom-right">10<span>♠</span></div>
+      </div>
+      <div class="card red">
+        <div class="card-corner top-left">K<span>♦</span></div>
+        <div class="card-center">♦</div>
+        <div class="card-corner bottom-right">K<span>♦</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================================
+       4. MODALS & OVERLAYS
+       ====================================================================== -->
+  
   <!-- App Settings Modal -->
-  <div id="app-settings-modal" class="modal">
+  <div id="app-settings-modal" class="modal-overlay hidden">
     <div class="modal-content">
-      <div class="modal-header">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
         <h3>App Settings</h3>
-        <button class="close-btn" onclick="closeModal('app-settings-modal')">&times;</button>
+        <button class="icon-btn" onclick="closeModal('app-settings-modal')">✕</button>
       </div>
-      <div class="setting-row">
-        <span>Music</span>
-        <input type="checkbox" id="music-toggle" checked>
+      <div style="display: flex; flex-direction: column; gap: 12px; text-align: left; margin-bottom: 20px;">
+        <label><input type="checkbox" checked> Music</label>
+        <label><input type="checkbox" checked> Sound Effects</label>
       </div>
-      <div class="setting-row">
-        <span>Sound Effects</span>
-        <input type="checkbox" id="sfx-toggle" checked>
-      </div>
-      <button class="btn-gold full-width" onclick="closeModal('app-settings-modal'); navigateTo('home-screen');">Return To Home</button>
+      <button class="btn-gold" onclick="closeModal('app-settings-modal'); showScreen('home-screen');">Return To Home</button>
     </div>
   </div>
 
   <!-- Game Settings Modal -->
-  <div id="game-settings-modal" class="modal">
+  <div id="game-settings-modal" class="modal-overlay hidden">
     <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="game-settings-title">Game Settings</h3>
-        <button class="close-btn" onclick="closeModal('game-settings-modal')">&times;</button>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h3>Crazy Eights Settings</h3>
+        <button class="icon-btn" onclick="closeModal('game-settings-modal')">✕</button>
       </div>
-      <div class="setting-row">
-        <span>Input Method</span>
-        <div class="chip-group">
-          <button class="chip active" onclick="selectChip(this)">Tap</button>
-          <button class="chip" onclick="selectChip(this)">Drag & Drop</button>
-        </div>
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+        <p>AI Difficulty: Easy | Medium | Hard</p>
       </div>
-      <div class="setting-row">
-        <span>AI Difficulty</span>
-        <div class="chip-group">
-          <button class="chip active" onclick="selectChip(this)">Easy</button>
-          <button class="chip" onclick="selectChip(this)">Medium</button>
-          <button class="chip" onclick="selectChip(this)">Hard</button>
-        </div>
-      </div>
-      <button class="btn-gold full-width" onclick="closeModal('game-settings-modal')">Save & Close</button>
+      <button class="btn-gold" onclick="closeModal('game-settings-modal')">Save & Close</button>
     </div>
   </div>
 
-  <!-- In-Game Settings Modal -->
-  <div id="in-game-settings-modal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
+  <!-- In-Game Menu Modal -->
+  <div id="in-game-menu-modal" class="modal-overlay hidden">
+    <div class="modal-content" style="display: flex; flex-direction: column; gap: 10px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
         <h3>Menu</h3>
-        <button class="close-btn" onclick="closeModal('in-game-settings-modal')">&times;</button>
+        <button class="icon-btn" onclick="closeModal('in-game-menu-modal')">✕</button>
       </div>
-      <div class="button-stack">
-        <button class="btn-gold" onclick="alert('An experienced player explains: Match the suit or rank of the top card. 8s are wild!')">How To Play</button>
-        <button class="btn-gold" onclick="alert('Tutorial mode active: Valid cards will highlight on your turn.')">Tutorial</button>
-        <button class="btn-gold" onclick="openGameSettingsFromInGame()">Game Settings</button>
-        <button class="btn-gold" onclick="closeModal('in-game-settings-modal'); navigateTo('main-menu-screen');">Return To Menu</button>
-        <button class="btn-gold" onclick="closeModal('in-game-settings-modal'); navigateTo('home-screen');">Return To Home</button>
-      </div>
+      <button class="btn-gold">How To Play</button>
+      <button class="btn-gold">Tutorial</button>
+      <button class="btn-gold" onclick="closeModal('in-game-menu-modal'); openModal('game-settings-modal');">Game Settings</button>
+      <button class="btn-gold" onclick="closeModal('in-game-menu-modal'); showScreen('main-menu-screen');">Return To Menu</button>
+      <button class="btn-gold" onclick="closeModal('in-game-menu-modal'); showScreen('home-screen');">Return To Home</button>
     </div>
   </div>
 
-  <!-- Suit Picker Modal (Crazy Eights 8 wild choice) -->
-  <div id="suit-picker-modal" class="modal">
-    <div class="modal-content" style="text-align: center;">
-      <div class="modal-header centered-header">
-        <h3>Choose a Suit</h3>
-      </div>
-      <div class="suit-grid">
-        <button class="suit-btn" onclick="selectEightSuit('Spades')">♠</button>
-        <button class="suit-btn red" onclick="selectEightSuit('Hearts')">♥</button>
-        <button class="suit-btn" onclick="selectEightSuit('Clubs')">♣</button>
-        <button class="suit-btn red" onclick="selectEightSuit('Diamonds')">♦</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Classic Cards Tour Modal -->
-  <div id="tour-modal" class="modal">
+  <!-- Tour Modal -->
+  <div id="tour-modal" class="modal-overlay hidden">
     <div class="modal-content">
-      <div class="modal-header">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
         <h3>Classic Cards Tour</h3>
-        <button class="close-btn" onclick="closeModal('tour-modal')">&times;</button>
+        <button class="icon-btn" onclick="closeModal('tour-modal')">✕</button>
       </div>
-      <p style="color: #e0e0e0; line-height: 1.5; margin-bottom: 20px;">
+      <p style="font-size: 0.95rem; line-height: 1.4; margin-bottom: 16px;">
         Welcome to Classic Cards! Tap Single Player or Multiplayer to access 12 classic games. Use the gear icons to modify rules, audio, and difficulty at any time.
       </p>
-      <button class="btn-gold full-width" onclick="closeModal('tour-modal')">Got It</button>
+      <button class="btn-gold" onclick="closeModal('tour-modal')">Got It</button>
     </div>
   </div>
 
-  <!-- End of Round Modal -->
-  <div id="round-over-modal" class="modal">
-    <div class="modal-content" style="text-align: center; max-width: 320px;">
-      <h3 id="round-result-title" style="margin-bottom: 15px; color: #ffffff; font-size: 1.4rem;"></h3>
-      <div id="round-scores-body" style="color: #e0e0e0; font-size: 1.05rem; line-height: 1.6; margin-bottom: 20px;"></div>
-      <div class="button-stack">
-        <button class="btn-gold" onclick="nextCrazyEightsRound()">Continue</button>
-        <button class="btn-gold" onclick="closeModal('round-over-modal'); navigateTo('main-menu-screen');">Return To Menu</button>
-      </div>
-    </div>
-  </div>
+  <!-- Navigation Helper JavaScript -->
+  <script>
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
 
-  <!-- End of Game Modal -->
-  <div id="game-over-modal" class="modal">
-    <div class="modal-content" style="text-align: center; max-width: 320px;">
-      <h3 id="game-result-title" style="margin-bottom: 15px; color: #ffffff; font-size: 1.5rem;"></h3>
-      <div id="game-scores-body" style="color: #e0e0e0; font-size: 1.05rem; line-height: 1.6; margin-bottom: 20px;"></div>
-      <div class="button-stack">
-        <button class="btn-gold" onclick="restartCrazyEightsGame()">Play Again</button>
-        <button class="btn-gold" onclick="closeModal('game-over-modal'); navigateTo('main-menu-screen');">Return To Menu</button>
-      </div>
-    </div>
-  </div>
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.remove('hidden');
+    }
 
-  <script src="app.js"></script>
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.add('hidden');
+    }
+  </script>
 </body>
 </html>
