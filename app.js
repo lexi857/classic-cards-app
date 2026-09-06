@@ -1,97 +1,12 @@
 /* ==========================================================================
-   CLASSIC CARDS: CRAZY EIGHTS ENGINE WITH PHYSICAL SLIDING ANIMATION
+   CLASSIC CARDS: CRAZY EIGHTS ENGINE WITH EXACT END-OF-ROUND MODALS
    ========================================================================== */
 
-const TARGET_SCORE = 100;
+const TARGET_SCORE = 100; // Target score to win full game
 
 let playerScore = 0;
 let opponentScore = 0;
-let highestScore = 135;
-
-const SUITS = [
-  { name: 'Spades', symbol: '♠', color: 'black' },
-  { name: 'Hearts', symbol: '♥', color: 'red' },
-  { name: 'Clubs', symbol: '♣', color: 'black' },
-  { name: 'Diamonds', symbol: '♦', color: 'red' }
-];
-
-const RANKS = [
-  { rank: 'A', value: 1 },
-  { rank: '2', value: 2 },
-  { rank: '3', value: 3 },
-  { rank: '4', value: 4 },
-  { rank: '5', value: 5 },
-  { rank: '6', value: 6 },
-  { rank: '7', value: 7 },
-  { rank: '8', value: 8 },
-  { rank: '9', value: 9 },
-  { rank: '10', value: 10 },
-  { rank: 'J', value: 10 },
-  { rank: 'Q', value: 10 },
-  { rank: 'K', value: 10 }
-];
-
-class Card {
-  constructor(suit, rank, isFaceUp = true) {
-    this.suit = suit;
-    this.rank = rank;
-    this.isFaceUp = isFaceUp;
-    this.id = Math.random().toString(36).substr(2, 9);
-  }
-
-  renderHTML(onClickHandler = null, extraClasses = '') {
-    const cardDiv = document.createElement('div');
-    cardDiv.dataset.cardId = this.id;
-    
-    if (!this.isFaceUp) {
-      cardDiv.className = `card back ${extraClasses}`.trim();
-      if (onClickHandler) cardDiv.onclick = onClickHandler;
-      return cardDiv;
-    }
-
-    cardDiv.className = `card ${this.suit.color} ${extraClasses}`.trim();
-    cardDiv.innerHTML = `
-      <div class="card-corner top-left">
-        <span class="card-rank">${this.rank.rank}</span>
-        <span class="card-suit-sm">${this.suit.symbol}</span>
-      </div>
-      <div class="card-center">${this.suit.symbol}</div>
-      <div class="card-corner bottom-right">
-        <span class="card-rank">${this.rank.rank}</span>
-        <span class="card-suit-sm">${this.suit.symbol}</span>
-      </div>
-    `;
-    if (onClickHandler) cardDiv.onclick = onClickHandler;
-    return cardDiv;
-  }
-}
-
-class Deck {
-  constructor() {
-    this.cards = [];
-    this.reset();
-  }
-
-  reset() {
-    this.cards = [];
-    SUITS.forEach(suit => {
-      RANKS.forEach(rank => {
-        this.cards.push(new Card(suit, rank));
-      });
-    });
-  }
-
-  shuffle() {
-    for (let i = this.cards.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
-    }
-  }
-
-  draw() {
-    return this.cards.pop();
-  }
-}
+let highestScore = 135; // Default record high score anchor
 
 let deck, playerHand, aiHand, discardPile;
 let currentSuit = null;
@@ -99,12 +14,6 @@ let currentRank = null;
 let isPlayerTurn = true;
 let pendingEightCardIndex = null;
 let isAnimating = false;
-
-function launchGame(gameTitle) {
-  document.getElementById('active-game-title').textContent = gameTitle;
-  navigateTo('game-screen');
-  startCrazyEights();
-}
 
 function startCrazyEights() {
   playerScore = 0;
@@ -153,239 +62,6 @@ function startNewRound() {
   renderBoard();
 }
 
-function hasValidPlay(hand) {
-  return hand.some(card => 
-    card.rank.rank === '8' || 
-    card.suit.name === currentSuit || 
-    card.rank.rank === currentRank
-  );
-}
-
-function renderBoard() {
-  const playArea = document.getElementById('table-play-area');
-  playArea.innerHTML = `
-    <div class="game-table">
-      <div class="hand-container" id="ai-hand-area"></div>
-      
-      <div class="table-area" id="center-table">
-        <div id="stock-deck-container"></div>
-        <div id="discard-container"></div>
-      </div>
-
-      <div style="color: #ffffff; font-weight: 600; text-align: center; margin-bottom: 5px;">
-        Active Suit: <strong>${getSuitSymbol(currentSuit)} ${currentSuit}</strong>
-      </div>
-
-      <div class="hand-container" id="player-hand-area"></div>
-    </div>
-  `;
-
-  const aiArea = document.getElementById('ai-hand-area');
-  aiHand.forEach(card => aiArea.appendChild(card.renderHTML()));
-
-  const stockContainer = document.getElementById('stock-deck-container');
-  if (deck.cards.length > 0) {
-    const stockCard = new Card(SUITS[0], RANKS[0], false);
-    stockContainer.appendChild(stockCard.renderHTML(() => handleDrawCard()));
-  } else {
-    stockContainer.innerHTML = `<div class="card back" style="opacity: 0.25; cursor: default;"></div>`;
-  }
-
-  const discardContainer = document.getElementById('discard-container');
-  if (discardPile.length > 0) {
-    const topCard = discardPile[discardPile.length - 1];
-    discardContainer.appendChild(topCard.renderHTML(null, 'playing'));
-  }
-
-  const playerArea = document.getElementById('player-hand-area');
-  playerHand.forEach((card, index) => {
-    playerArea.appendChild(card.renderHTML(() => handlePlayerCardClick(index)));
-  });
-}
-
-function getSuitSymbol(suitName) {
-  const s = SUITS.find(item => item.name === suitName);
-  return s ? s.symbol : '';
-}
-
-/* Coordinate Card Slide Motion Engine */
-function animateCardTranslation(startElem, targetElem, onComplete) {
-  const startRect = startElem.getBoundingClientRect();
-  const targetRect = targetElem.getBoundingClientRect();
-
-  const clone = startElem.cloneNode(true);
-  clone.classList.add('animating-card');
-  clone.style.left = `${startRect.left}px`;
-  clone.style.top = `${startRect.top}px`;
-  clone.style.width = `${startRect.width}px`;
-  clone.style.height = `${startRect.height}px`;
-
-  document.body.appendChild(clone);
-  startElem.style.visibility = 'hidden';
-
-  const deltaX = targetRect.left - startRect.left;
-  const deltaY = targetRect.top - startRect.top;
-
-  requestAnimationFrame(() => {
-    clone.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-  });
-
-  setTimeout(() => {
-    clone.remove();
-    onComplete();
-  }, 450);
-}
-
-function handlePlayerCardClick(index) {
-  if (!isPlayerTurn || isAnimating) return;
-
-  const card = playerHand[index];
-  const isEight = card.rank.rank === '8';
-  const matchesSuit = card.suit.name === currentSuit;
-  const matchesRank = card.rank.rank === currentRank;
-
-  if (isEight) {
-    pendingEightCardIndex = index;
-    openModal('suit-picker-modal');
-    return;
-  }
-
-  if (matchesSuit || matchesRank) {
-    playPlayerCard(index, card.suit.name);
-  }
-}
-
-function selectEightSuit(suitName) {
-  closeModal('suit-picker-modal');
-  if (pendingEightCardIndex !== null) {
-    playPlayerCard(pendingEightCardIndex, suitName);
-    pendingEightCardIndex = null;
-  }
-}
-
-function playPlayerCard(index, chosenSuit) {
-  isAnimating = true;
-  const playerArea = document.getElementById('player-hand-area');
-  const cardElem = playerArea.children[index];
-  const discardElem = document.getElementById('discard-container');
-
-  const card = playerHand.splice(index, 1)[0];
-
-  animateCardTranslation(cardElem, discardElem, () => {
-    discardPile.push(card);
-    currentSuit = chosenSuit;
-    currentRank = card.rank.rank;
-
-    renderBoard();
-
-    if (checkWinner()) {
-      isAnimating = false;
-      return;
-    }
-
-    isPlayerTurn = false;
-    setTimeout(() => {
-      isAnimating = false;
-      runAITurn();
-    }, 300);
-  });
-}
-
-function handleDrawCard() {
-  if (!isPlayerTurn || isAnimating) return;
-  if (hasValidPlay(playerHand)) return;
-
-  if (deck.cards.length > 0) {
-    isAnimating = true;
-    const stockElem = document.getElementById('stock-deck-container').firstElementChild;
-    const playerArea = document.getElementById('player-hand-area');
-
-    const drawnCard = deck.draw();
-
-    animateCardTranslation(stockElem, playerArea, () => {
-      playerHand.push(drawnCard);
-      renderBoard();
-
-      if (!hasValidPlay([drawnCard])) {
-        isPlayerTurn = false;
-        setTimeout(runAITurn, 500);
-      }
-      isAnimating = false;
-    });
-  } else {
-    isPlayerTurn = false;
-    setTimeout(runAITurn, 500);
-  }
-}
-
-function runAITurn() {
-  if (isPlayerTurn || isAnimating) return;
-
-  let playableIndices = [];
-  aiHand.forEach((card, index) => {
-    if (card.rank.rank === '8' || card.suit.name === currentSuit || card.rank.rank === currentRank) {
-      playableIndices.push(index);
-    }
-  });
-
-  if (playableIndices.length > 0) {
-    isAnimating = true;
-    const chosenIndex = playableIndices[0];
-    const aiArea = document.getElementById('ai-hand-area');
-    const cardElem = aiArea.children[chosenIndex];
-    const discardElem = document.getElementById('discard-container');
-
-    const card = aiHand.splice(chosenIndex, 1)[0];
-    card.isFaceUp = true;
-
-    animateCardTranslation(cardElem, discardElem, () => {
-      discardPile.push(card);
-      if (card.rank.rank === '8') {
-        currentSuit = aiHand.length > 0 ? aiHand[0].suit.name : 'Spades';
-      } else {
-        currentSuit = card.suit.name;
-      }
-      currentRank = card.rank.rank;
-
-      renderBoard();
-
-      if (checkWinner()) {
-        isAnimating = false;
-        return;
-      }
-
-      isAnimating = false;
-      isPlayerTurn = true;
-      renderBoard();
-    });
-  } else if (deck.cards.length > 0) {
-    isAnimating = true;
-    const stockElem = document.getElementById('stock-deck-container').firstElementChild;
-    const aiArea = document.getElementById('ai-hand-area');
-
-    const drawnCard = deck.draw();
-    drawnCard.isFaceUp = false;
-
-    animateCardTranslation(stockElem, aiArea, () => {
-      aiHand.push(drawnCard);
-      renderBoard();
-
-      drawnCard.isFaceUp = true;
-      if (drawnCard.rank.rank === '8' || drawnCard.suit.name === currentSuit || drawnCard.rank.rank === currentRank) {
-        setTimeout(runAITurn, 300);
-      } else {
-        drawnCard.isFaceUp = false;
-        isPlayerTurn = true;
-        renderBoard();
-      }
-      isAnimating = false;
-    });
-  } else {
-    isPlayerTurn = true;
-    renderBoard();
-  }
-}
-
 function calculateHandPoints(hand) {
   return hand.reduce((sum, card) => {
     const r = card.rank.rank;
@@ -394,18 +70,6 @@ function calculateHandPoints(hand) {
     if (r === 'A') return sum + 1;
     return sum + parseInt(r, 10);
   }, 0);
-}
-
-function checkWinner() {
-  if (playerHand.length === 0) {
-    handleRoundEnd(true);
-    return true;
-  }
-  if (aiHand.length === 0) {
-    handleRoundEnd(false);
-    return true;
-  }
-  return false;
 }
 
 function handleRoundEnd(playerWon) {
@@ -469,38 +133,14 @@ function showGameOverModal(playerWon) {
   openModal('game-over-modal');
 }
 
-/* UI Navigation */
-function navigateTo(screenId) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
-  const target = document.getElementById(screenId);
-  if (target) target.classList.add('active');
-}
-
-function openModal(modalId) {
-  const target = document.getElementById(modalId);
-  if (target) target.classList.add('active');
-}
-
-function closeModal(modalId) {
-  const target = document.getElementById(modalId);
-  if (target) target.classList.remove('active');
-}
-
-function selectChip(button) {
-  const siblings = button.parentElement.querySelectorAll('.chip');
-  siblings.forEach(chip => chip.classList.remove('active'));
-  button.classList.add('active');
-}
-
-function openGameSettings(gameTitle) {
-  document.getElementById('game-settings-title').textContent = `${gameTitle} Settings`;
-  openModal('game-settings-modal');
-}
-
-function openGameSettingsFromInGame() {
-  const activeTitle = document.getElementById('active-game-title').textContent;
-  document.getElementById('game-settings-title').textContent = `${activeTitle} Settings`;
-  closeModal('in-game-settings-modal');
-  openModal('game-settings-modal');
+function checkWinner() {
+  if (playerHand.length === 0) {
+    handleRoundEnd(true);
+    return true;
+  }
+  if (aiHand.length === 0) {
+    handleRoundEnd(false);
+    return true;
+  }
+  return false;
 }
