@@ -1,4 +1,35 @@
 /* ==========================================================================
+   OFFLINE WEB AUDIO FX ENGINE
+   ========================================================================== */
+const AudioEngine = {
+  ctx: null,
+  init() {
+    if (!this.ctx) {
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+  },
+  playSlide() {
+    if (!document.getElementById('sfx-toggle')?.checked) return;
+    this.init();
+    const bufferSize = this.ctx.sampleRate * 0.08;
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 1200;
+    filter.Q.value = 3;
+    noise.connect(filter);
+    filter.connect(this.ctx.destination);
+    noise.start();
+  }
+};
+
+/* ==========================================================================
    CRAZY EIGHTS ENGINE WITH PHYSICAL CARD MOTION & STRICT RULES
    ========================================================================== */
 
@@ -17,7 +48,7 @@ const RANKS = [
   { rank: '5', value: 5 },
   { rank: '6', value: 6 },
   { rank: '7', value: 7 },
-  { rank: '8', value: 8 },
+  { rank: '8', value: 50 },
   { rank: '9', value: 9 },
   { rank: '10', value: 10 },
   { rank: 'J', value: 10 },
@@ -93,6 +124,11 @@ let currentRank = null;
 let isPlayerTurn = true;
 let pendingEightCardIndex = null;
 let isAnimating = false;
+
+/* Score Tracking State */
+let playerScore = 0;
+let aiScore = 0;
+let highestScore = 135;
 
 function launchGame(gameTitle) {
   document.getElementById('active-game-title').textContent = gameTitle;
@@ -222,6 +258,7 @@ function selectEightSuit(suitName) {
 
 function playPlayerCard(index, chosenSuit) {
   isAnimating = true;
+  AudioEngine.playSlide();
   const card = playerHand.splice(index, 1)[0];
   discardPile.push(card);
   currentSuit = chosenSuit;
@@ -241,27 +278,25 @@ function playPlayerCard(index, chosenSuit) {
 function handleDrawCard() {
   if (!isPlayerTurn || isAnimating) return;
 
-  // Rule: Player cannot draw if they already have a valid move
   if (hasValidPlay(playerHand)) {
     return;
   }
 
   if (deck.cards.length > 0) {
     isAnimating = true;
+    AudioEngine.playSlide();
     const drawnCard = deck.draw();
     playerHand.push(drawnCard);
     renderBoard();
 
     setTimeout(() => {
       isAnimating = false;
-      // If drawn card isn't playable, turn automatically passes
       if (!hasValidPlay([drawnCard])) {
         isPlayerTurn = false;
         setTimeout(runAITurn, 600);
       }
     }, 400);
   } else {
-    // Stock empty: turn passes
     isPlayerTurn = false;
     setTimeout(runAITurn, 600);
   }
@@ -280,6 +315,7 @@ function runAITurn() {
 
   if (playableIndices.length > 0) {
     isAnimating = true;
+    AudioEngine.playSlide();
     const chosenIndex = playableIndices[0];
     const card = aiHand.splice(chosenIndex, 1)[0];
     card.isFaceUp = true;
@@ -303,6 +339,7 @@ function runAITurn() {
     }, 600);
   } else if (deck.cards.length > 0) {
     isAnimating = true;
+    AudioEngine.playSlide();
     const drawnCard = deck.draw();
     drawnCard.isFaceUp = false;
     aiHand.push(drawnCard);
@@ -310,7 +347,6 @@ function runAITurn() {
 
     setTimeout(() => {
       isAnimating = false;
-      // If AI drew a playable card, attempt to play it
       drawnCard.isFaceUp = true;
       if (drawnCard.rank.rank === '8' || drawnCard.suit.name === currentSuit || drawnCard.rank.rank === currentRank) {
         setTimeout(runAITurn, 400);
@@ -321,34 +357,68 @@ function runAITurn() {
       }
     }, 500);
   } else {
-    // Pass if stock deck empty
     isPlayerTurn = true;
     renderBoard();
   }
 }
 
+function calculateHandPoints(hand) {
+  return hand.reduce((total, card) => total + card.rank.value, 0);
+}
+
 function checkWinner() {
   if (playerHand.length === 0) {
-    showGameOverModal(true);
+    const points = calculateHandPoints(aiHand);
+    showGameOverModal(true, points);
     return true;
   }
   if (aiHand.length === 0) {
-    showGameOverModal(false);
+    const points = calculateHandPoints(playerHand);
+    showGameOverModal(false, points);
     return true;
   }
   return false;
 }
 
-function showGameOverModal(playerWon) {
-  const title = document.getElementById('game-over-title');
-  const message = document.getElementById('game-over-message');
-
+function showGameOverModal(playerWon, pointDifference) {
+  const modalContent = document.querySelector('#game-over-modal .modal-content');
+  
   if (playerWon) {
-    title.textContent = "Victory!";
-    message.textContent = "🎉 Congratulations! You cleared your hand and won Crazy Eights!";
+    playerScore += pointDifference;
+    const isGameEnd = playerScore >= highestScore;
+    
+    modalContent.innerHTML = `
+      <div class="modal-header centered-header">
+        <h3>${isGameEnd ? 'You Won!' : `You Won ${pointDifference} Points!`}</h3>
+      </div>
+      <div style="text-align: center; margin: 15px 0; line-height: 1.6;">
+        <p>${isGameEnd ? 'Final Score' : 'Current Score'}: <strong>${playerScore} Points</strong></p>
+        <p>Opponent Score: <strong>${aiScore} Points</strong></p>
+        <p style="margin-top: 8px; color: #d4af37;">Highest Score: ${highestScore} Points</p>
+      </div>
+      <div class="button-stack">
+        <button class="btn-gold" onclick="restartCrazyEights()">${isGameEnd ? 'Play Again' : 'Continue'}</button>
+        <button class="btn-gold" onclick="closeModal('game-over-modal'); navigateTo('main-menu-screen');">Return To Menu</button>
+      </div>
+    `;
   } else {
-    title.textContent = "Defeat";
-    message.textContent = "🤖 The AI player cleared their hand first. Better luck next time!";
+    aiScore += pointDifference;
+    const isGameEnd = aiScore >= highestScore;
+
+    modalContent.innerHTML = `
+      <div class="modal-header centered-header">
+        <h3>${isGameEnd ? 'Opponent Won' : `Opponent Won ${pointDifference} Points`}</h3>
+      </div>
+      <div style="text-align: center; margin: 15px 0; line-height: 1.6;">
+        <p>${isGameEnd ? 'Final Score' : 'Current Score'}: <strong>${playerScore} Points</strong></p>
+        <p>Opponent Score: <strong>${aiScore} Points</strong></p>
+        <p style="margin-top: 8px; color: #d4af37;">Highest Score: ${highestScore} Points</p>
+      </div>
+      <div class="button-stack">
+        <button class="btn-gold" onclick="restartCrazyEights()">${isGameEnd ? 'Play Again' : 'Continue'}</button>
+        <button class="btn-gold" onclick="closeModal('game-over-modal'); navigateTo('main-menu-screen');">Return To Menu</button>
+      </div>
+    `;
   }
 
   openModal('game-over-modal');
